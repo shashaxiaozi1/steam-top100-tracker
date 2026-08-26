@@ -32,6 +32,9 @@ jobs:
       - name: Update Steam Top 100 data
         run: python scripts/update_steam_top100.py
 
+      - name: Build Power BI trend files
+        run: python scripts/build_trend_blank.py
+
       - name: Commit updated data
         run: |
           if git diff --quiet; then
@@ -41,6 +44,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add steam_top100_all.csv data/raw/weekly/
+          git add steam_top100_all.csv data/raw/weekly/ data/processed/trend/
           git commit -m "Update Steam Top 100 weekly rankings"
           git push
