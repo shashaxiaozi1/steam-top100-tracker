@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-DATA_FILE = Path("data/processed/steam_top100_all.csv")
+DATA_FILE = Path("steam_top100_all.csv")
 RAW_DIR = Path("data/raw/weekly")
 REGIONS = {
     "CN": {"url_code": "CN", "country": "CN"},
@@ -184,7 +184,6 @@ def main():
     existing["week_start"] = pd.to_datetime(existing["week_start"], errors="raise")
     existing["country"] = existing["country"].astype(str).str.upper().str.strip()
 
-    # Use the latest week that exists for all four regions as the baseline.
     coverage = existing.groupby("week_start")["country"].nunique().sort_index()
     complete_weeks = coverage[coverage >= 4].index
     if len(complete_weeks) == 0:
