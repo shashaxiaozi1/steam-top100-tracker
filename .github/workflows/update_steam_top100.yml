@@ -1,0 +1,46 @@
+name: Update Steam Top 100
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Wednesday 09:00 JST = Wednesday 00:00 UTC
+    - cron: "0 0 * * 3"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Google Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Update Steam Top 100 data
+        run: python scripts/update_steam_top100.py
+
+      - name: Commit updated data
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/processed/steam_top100_all.csv data/raw/weekly/
+          git commit -m "Update Steam Top 100 weekly rankings"
+          git push
